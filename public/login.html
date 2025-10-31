@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal 2 - Iniciar Sesión</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <path d="M20 5L15 10H10V15L5 20L10 25V30H15L20 35L25 30H30V25L35 20L30 15V10H25L20 5Z" fill="white"/>
+                        <text x="20" y="28" font-family="Arial" font-size="14" fill="#0066CC" text-anchor="middle" font-weight="bold">M</text>
+                    </svg>
+                    <span class="logo-text">Mercapleno</span>
+                </div>
+                <h1 class="portal-title">Portal 2</h1>
+            </div>
+            <button class="inicio-btn">Inicio</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2>Iniciar Sesión</h2>
+            
+            <form action="../mercapleno_api/login.php" method="POST">
+                <div class="form-group">
+                    <label for="email">Dirección de correo electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="E-mail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Introduce tu contraseña" required>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span class="checkbox-label">Recordarme</span>
+                    </label>
+                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="submit-btn">Ingresar</button>
+
+                <div class="register-link">
+                    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer></footer>
+</body>
+</html>
