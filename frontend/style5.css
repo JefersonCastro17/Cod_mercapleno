@@ -1,0 +1,67 @@
+body {
+    background-color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.barra-navegacion {
+    background-color: #073B74;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.texto-logo {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.contenedor-botones {
+    display: flex;
+}
+
+.boton-nav {
+    background-color: #F9B300;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 8px;
+    margin-left: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.titulo-principal {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 32px;
+}
+
+.caja-ticket {
+    background-color: #d6d3d3;
+    width: 60%;
+    margin: auto;
+    padding: 25px;
+    border-radius: 4px;
+    font-size: 18px;
+}
+
+.alinear-derecha {
+    float: right;
+}
+
+.centro {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.boton-regresar {
+    background-color: #F9B300;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
