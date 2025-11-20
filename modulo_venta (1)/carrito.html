@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario - Carrito</title>
+  <link rel="stylesheet" href="inventario.css">
+  <link rel="stylesheet" href="carrito.css">
+</head>
+<body>
+
+  <header>
+    <nav class="barra-navegacion">
+      <div class="texto-logo">Portal 2</div>
+      <div class="contenedor-botones">
+        <a href="inventario.html" class="boton-nav">Inicio</a>
+        <a href="carrito.html" class="boton-nav" id="carrito-link">
+          Carrito (<span id="cuenta-carrito">0</span>)
+        </a>
+      </div>
+    </nav>
+
+    <h1 style="text-align:center; margin-top:12px;">Tu Carrito de Compras</h1>
+  </header>
+
+  <main class="carrito-main">
+    
+    <section id="productos-carrito-container" class="productos-carrito-container">
+    </section>
+
+    <div id="carrito-vacio-msg" class="mensaje-vacio hidden">
+        <p>Tu carrito está vacio</p>
+        <a href="inventario.html" class="boton-nav">explorar productos</a>
+    </div>
+
+    <section id="totales-container" class="totales-container hidden">
+        <p>Unidades totales: <span id="total-unidades">0</span></p>
+        <p>Total a pagar: <span id="total-precio">0$</span></p>
+        <div class="botones-carrito">
+            <button id="btn-vaciar" class="boton-vaciar">Vaciar Carrito</button>
+            <a href="ticket.html" class="boton-nav boton-pagar">Proceder al Pago</a>
+        </div>
+    </section>
+    
+    <h2 style="margin-top: 40px;">Productos Sugeridos para ti</h2>
+    
+    <section id="productos-sugeridos-container" class="catalogo" style="max-width: 100%;"> 
+        
+        <div class="producto" data-name="Leche Entera Colanta" data-category="lacteos" data-price="4500" data-id="101">
+            <p class="nombre">Leche Colanta Litro</p>
+            <div class="imagen"><img src="colanta_leche.jpg" alt="Leche Colanta"></div>
+            <p class="precio">4.500$</p>
+            <div class="descripcion">Leche pasteurizada entera.</div>
+            <div class="botones">
+                <button class="botoncito_producto agregar-carrito" data-id="101"><span class="letra_hiper">agregar al carrito</span></button>
+            </div>
+        </div>
+        
+        <div class="producto" data-name="Gaseosa Postobon Manzana" data-category="bebidas" data-price="2800" data-id="102">
+            <p class="nombre">Postobón Manzana 350ml</p>
+            <div class="imagen"><img src="postobon_manzana.jpg" alt="Gaseosa Postobon"></div>
+            <p class="precio">2.800$</p>
+            <div class="descripcion">Gaseosa sabor a manzana, refrescante.</div>
+            <div class="botones">
+                <button class="botoncito_producto agregar-carrito" data-id="102"><span class="letra_hiper">agregar al carrito</span></button>
+            </div>
+        </div>
+
+        <div class="producto" data-name="Galletas Saltin Noel" data-category="panaderia" data-price="3500" data-id="103">
+            <p class="nombre">Saltín Noel Paquete</p>
+            <div class="imagen"><img src="saltin_noel.jpg" alt="Galletas Saltín Noel"></div>
+            <p class="precio">3.500$</p>
+            <div class="descripcion">Galletas saladas tradicionales.</div>
+            <div class="botones">
+                <button class="botoncito_producto agregar-carrito" data-id="103"><span class="letra_hiper">agregar al carrito</span></button>
+            </div>
+        </div>
+        
+    </section>
+    </main>
+
+  <script src="cartService.js"></script>
+  <script src="carrito.js"></script>
+</body>
+</html>
