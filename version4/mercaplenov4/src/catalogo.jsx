@@ -17,31 +17,30 @@ export default function Catalogo() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const verificarUsuario = () => {
+      const user = localStorage.getItem("user");
+
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+
+      setUsuario(JSON.parse(user));
+    };
+
     verificarUsuario();
     cargarProductos();
     cargarCarritoGuardado();
-  }, []);
+  }, [navigate]);
 
-  // Guardar carrito
+  // Guardar carrito en localStorage
   useEffect(() => {
     if (carrito.length > 0) {
       localStorage.setItem('carrito', JSON.stringify(carrito));
     }
   }, [carrito]);
 
-  // 🔥 CORRECCIÓN IMPORTANTE → verifica sesión con localStorage
-  const verificarUsuario = () => {
-    const user = localStorage.getItem("user");
-
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    setUsuario(JSON.parse(user));
-  };
-
-  // 🔥 Cargar productos
+  // Cargar productos desde el servidor o usar datos de ejemplo
   const cargarProductos = async () => {
     setCargando(true);
 
@@ -52,13 +51,40 @@ export default function Catalogo() {
       if (data.success && data.productos.length > 0) {
         setProductos(data.productos);
       } else {
+        // Productos de ejemplo con más variedad
         setProductos([
           { id: 1, nombre: 'Manzanas', precio: 2500, imagen: '🍎', categoria: 'Frutas', stock: 50 },
           { id: 2, nombre: 'Bananos', precio: 1800, imagen: '🍌', categoria: 'Frutas', stock: 40 },
+          { id: 3, nombre: 'Naranjas', precio: 2200, imagen: '🍊', categoria: 'Frutas', stock: 35 },
+          { id: 4, nombre: 'Fresas', precio: 3500, imagen: '🍓', categoria: 'Frutas', stock: 25 },
+          { id: 5, nombre: 'Lechuga', precio: 1500, imagen: '🥬', categoria: 'Verduras', stock: 30 },
+          { id: 6, nombre: 'Tomates', precio: 2800, imagen: '🍅', categoria: 'Verduras', stock: 45 },
+          { id: 7, nombre: 'Zanahorias', precio: 1900, imagen: '🥕', categoria: 'Verduras', stock: 40 },
+          { id: 8, nombre: 'Brócoli', precio: 2300, imagen: '🥦', categoria: 'Verduras', stock: 28 },
+          { id: 9, nombre: 'Pan Integral', precio: 3200, imagen: '🍞', categoria: 'Panadería', stock: 60 },
+          { id: 10, nombre: 'Croissant', precio: 2800, imagen: '🥐', categoria: 'Panadería', stock: 35 },
+          { id: 11, nombre: 'Leche', precio: 4500, imagen: '🥛', categoria: 'Lácteos', stock: 50 },
+          { id: 12, nombre: 'Queso', precio: 8500, imagen: '🧀', categoria: 'Lácteos', stock: 20 },
+          { id: 13, nombre: 'Yogurt', precio: 3200, imagen: '🥄', categoria: 'Lácteos', stock: 45 },
+          { id: 14, nombre: 'Huevos', precio: 6500, imagen: '🥚', categoria: 'Lácteos', stock: 55 },
+          { id: 15, nombre: 'Pollo', precio: 12500, imagen: '🍗', categoria: 'Carnes', stock: 30 },
+          { id: 16, nombre: 'Pescado', precio: 15000, imagen: '🐟', categoria: 'Carnes', stock: 22 },
+          { id: 17, nombre: 'Carne Res', precio: 18000, imagen: '🥩', categoria: 'Carnes', stock: 18 },
+          { id: 18, nombre: 'Pizza', precio: 22000, imagen: '🍕', categoria: 'Comidas', stock: 12 },
+          { id: 19, nombre: 'Hamburguesa', precio: 16000, imagen: '🍔', categoria: 'Comidas', stock: 15 },
+          { id: 20, nombre: 'Helado', precio: 8500, imagen: '🍦', categoria: 'Postres', stock: 40 },
         ]);
       }
     } catch (error) {
       console.error('Error al cargar productos:', error);
+      // Productos de ejemplo en caso de error
+      setProductos([
+        { id: 1, nombre: 'Manzanas', precio: 2500, imagen: '🍎', categoria: 'Frutas', stock: 50 },
+        { id: 2, nombre: 'Bananos', precio: 1800, imagen: '🍌', categoria: 'Frutas', stock: 40 },
+        { id: 3, nombre: 'Naranjas', precio: 2200, imagen: '🍊', categoria: 'Frutas', stock: 35 },
+        { id: 4, nombre: 'Lechuga', precio: 1500, imagen: '🥬', categoria: 'Verduras', stock: 30 },
+        { id: 5, nombre: 'Tomates', precio: 2800, imagen: '🍅', categoria: 'Verduras', stock: 45 },
+      ]);
     }
 
     setCargando(false);
@@ -71,7 +97,6 @@ export default function Catalogo() {
     }
   };
 
-  // 🔥 Cerrar sesión corregido
   const cerrarSesion = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("carrito");
@@ -143,6 +168,7 @@ export default function Catalogo() {
     if (ordenamiento === 'nombre') return a.nombre.localeCompare(b.nombre);
     if (ordenamiento === 'precio-asc') return a.precio - b.precio;
     if (ordenamiento === 'precio-desc') return b.precio - a.precio;
+    return 0;
   });
 
   const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
@@ -221,6 +247,10 @@ export default function Catalogo() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="descuentos-info">
+            <p>🎉 ¡Ofertas especiales! Hasta 20% de descuento en productos seleccionados</p>
           </div>
         </div>
 
@@ -319,7 +349,7 @@ export default function Catalogo() {
 
                   <div className="carrito-acciones">
                     <button onClick={vaciarCarrito} className="btn-vaciar">Vaciar Carrito</button>
-                    <button onClick={() => alert("Compra Finalizada")} className="btn-comprar">Finalizar Compra</button>
+                    <button onClick={() => alert("¡Compra Finalizada con Éxito!")} className="btn-comprar">Finalizar Compra</button>
                   </div>
                 </div>
               </>

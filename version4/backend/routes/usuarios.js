@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-// ======================
-// REGISTRO DE USUARIO
-// ======================
+
+
+// REGISTRO
+
 router.post("/register", async (req, res) => {
   const { nombre, apellido, email, password, direccion, fecha_nacimiento } = req.body;
 
@@ -39,9 +41,9 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ======================
-// LOGIN DE USUARIO
-// ======================
+
+// LOGIN
+
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -63,19 +65,29 @@ router.post("/login", async (req, res) => {
 
     const user = results[0];
 
-    // Validar contraseña
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       return res.json({ success: false, message: "Contraseña incorrecta" });
     }
 
-    // === Login exitoso ===
+    // CREAR TOKEN JWT 
+    const token = jwt.sign(
+      {
+        id: user.id_usuario,
+        email: user.email
+      },
+      "Yogui1234567890",   // cambia esta palabra luego
+      { expiresIn: "24h" }        // el token dura 24 horas
+    );
+
+    //  Respuesta final (esperada por el frontend)
     res.json({
       success: true,
       message: "Inicio de sesión exitoso",
+      token,  // <-- aquí va el token
       user: {
-        id: user.id,
+        id: user.id_usuario,
         nombre: user.nombre,
         apellido: user.apellido,
         email: user.email
@@ -84,11 +96,9 @@ router.post("/login", async (req, res) => {
   });
 });
 
-// ======================
-// LOGOUT
-// ======================
-// El backend realmente no "cierra sesión"
-// Solo se usa en el frontend borrando el token.
+
+// LOGOUT (solo frontend)
+
 router.post("/logout", (req, res) => {
   res.json({ success: true, message: "Sesión cerrada" });
 });

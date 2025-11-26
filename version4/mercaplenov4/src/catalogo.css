@@ -1,5 +1,6 @@
-/* Catálogo - Estilos específicos */
+/* catalogo.css - Estilos del Catálogo */
 
+/* Contenedor principal */
 .catalogo-wrapper {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -73,7 +74,7 @@
   justify-content: center;
 }
 
-/* Barra de búsqueda pegada al header */
+/* Barra de búsqueda */
 .barra-busqueda {
   background: white;
   border-bottom: 3px solid #e0e0e0;
@@ -197,7 +198,7 @@
   font-size: 1rem;
 }
 
-/* Productos Grid - Mosaico mejorado */
+/* Productos Grid */
 .productos-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -535,11 +536,6 @@
   padding: 0.5rem 0;
   font-size: 1.1rem;
   color: #2c3e50;
-}
-
-.total-linea.descuento {
-  color: #e74c3c;
-  font-weight: 600;
 }
 
 .total-linea.total-final {
