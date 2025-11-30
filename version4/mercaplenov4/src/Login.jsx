@@ -14,7 +14,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/login", {
+      const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +43,7 @@ function Login() {
       alert("Inicio de sesión exitoso");
 
       // Redirigir con React Router
-      navigate("/catalogo");
+      navigate("/usuariosC");
 
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

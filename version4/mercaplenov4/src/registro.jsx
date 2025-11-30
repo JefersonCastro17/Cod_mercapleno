@@ -55,7 +55,7 @@ function Registro() {
     const fecha_nacimiento = `${ano}-${mes}-${dia}`;
 
     try {
-      const response = await fetch("http://localhost:3000/api/register", {
+      const response = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
