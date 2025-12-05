@@ -73,6 +73,7 @@ if (requireCode) {
 
   localStorage.setItem("token", data.token);
   localStorage.setItem("user", JSON.stringify(data.user));
+  alert("Inicio de sesión exitoso");
 
   if (data.user.id_rol === 1) {
     navigate("/usuarioC");

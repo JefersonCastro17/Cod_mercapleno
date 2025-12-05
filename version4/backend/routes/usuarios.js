@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = "yogui"; // .env, no se que es
+
 
 // =======================================
 // FUNCIÓN SEGURA PARA CONSULTAR LA BD
@@ -172,20 +175,29 @@ const sql = `
       return res.json({ success: false, message: "Contraseña incorrecta" });
     }
 
-    res.json({
-      success: true,
-      message: "Inicio de sesión exitoso",
-      user: {
-        id: user.id,
-        nombre: user.nombre,
-        apellido: user.apellido,
-        email: user.email,
-        id_rol: user.id_rol,
-        rol: user.nombre_rol,
-        tipo_documento: user.tipo_identificacion,
-        documento: user.numero_identificacion
-      }
-    });
+    // --- Generar token ---
+    const token = jwt.sign(
+      { id: user.id, id_rol: user.id_rol, email: user.email },
+      SECRET_KEY,
+      { expiresIn: "2h" }
+);
+
+
+  res.json({
+    success: true,
+    message: "Inicio de sesión exitoso",
+    token,
+    user: {
+      id: user.id,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      id_rol: user.id_rol,
+      rol: user.nombre_rol,
+      tipo_documento: user.tipo_identificacion,
+      documento: user.numero_identificacion
+  }
+});
 
   } catch (error) {
     console.error("Error en login:", error);
