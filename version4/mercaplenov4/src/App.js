@@ -14,7 +14,7 @@ function App() {
         <Route path="/catalogo" element={<Catalogo />} />
 
         {/* ESTA RUTA FALTABA */}
-        <Route path="/usuariosC" element={<CRUD1 />} />
+        <Route path="/usuarioC" element={<CRUD1 />} />
       </Routes>
     </BrowserRouter>
   );
