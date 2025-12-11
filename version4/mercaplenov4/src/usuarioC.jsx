@@ -13,29 +13,41 @@ export default function CRUD1() {
   });
   const [editId, setEditId] = useState(null);
   const [mensaje, setMensaje] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    obtenerUsuarios();
-  }, []);
+    if (!token) {
+      alert("No autorizado, por favor inicia sesión.");
+      window.location.href = "/login";
+    } else {
+      obtenerUsuarios();
+    }
+  }, [token]);
 
   // ===========================
-  // GET USUARIOS
+  // OBTENER USUARIOS
   // ===========================
   const obtenerUsuarios = async () => {
+    setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/usuarioC/");
+      const res = await fetch("http://localhost:3000/usuarioC/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
 
       if (data.success && Array.isArray(data.usuarios)) {
         setUsuarios(data.usuarios);
       } else {
         setUsuarios([]);
+        setMensaje(data.message || "No hay usuarios disponibles");
       }
-
     } catch (error) {
       console.error("Error cargando usuarios:", error);
       setMensaje("Error cargando usuarios");
     }
+    setLoading(false);
   };
 
   const handleChange = (e) => {
@@ -43,40 +55,37 @@ export default function CRUD1() {
   };
 
   // ===========================
-  // CONTROLAR SUBMIT (Crear / Actualizar)
+  // CREAR / ACTUALIZAR
   // ===========================
   const enviarFormulario = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    if (editId === null) {
-      await crearUsuario();
-    } else {
-      await actualizarUsuario();
-    }
+    const url = editId
+      ? `http://localhost:3000/usuarioC/${editId}`
+      : "http://localhost:3000/usuarioC/";
 
-    obtenerUsuarios();
-  };
+    const method = editId ? "PUT" : "POST";
 
-  // ===========================
-  // POST CREAR USUARIO
-  // ===========================
-  const crearUsuario = async () => {
     try {
-      const res = await fetch("http://localhost:3000/usuarioC/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-});
-
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       const data = await res.json();
 
       if (!data.success) {
-        setMensaje(data.message || "Error guardando usuario");
+        setMensaje(data.message || "Error en la operación");
+        setLoading(false);
         return;
       }
 
-      setMensaje("Usuario creado correctamente");
+      setMensaje(editId ? "Usuario actualizado" : "Usuario creado correctamente");
 
       setFormData({
         nombre: "",
@@ -86,49 +95,14 @@ export default function CRUD1() {
         direccion: "",
         fecha_nacimiento: "",
       });
-
-    } catch (error) {
-      console.error("Error crear usuario:", error);
-      setMensaje("Error guardando usuario");
-    }
-  };
-
-  // ===========================
-  // PUT ACTUALIZAR USUARIO
-  // ===========================
-  const actualizarUsuario = async () => {
-    try {
-    const res = await fetch(`http://localhost:3000/usuarioC/${editId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-});
-
-
-      const data = await res.json();
-
-      if (!data.success) {
-        setMensaje(data.message || "Error actualizando usuario");
-        return;
-      }
-
-      setMensaje("Usuario actualizado correctamente");
-
       setEditId(null);
 
-      setFormData({
-        nombre: "",
-        apellido: "",
-        email: "",
-        password: "",
-        direccion: "",
-        fecha_nacimiento: "",
-      });
-
+      obtenerUsuarios();
     } catch (error) {
-      console.error("Error actualizar usuario:", error);
-      setMensaje("Error actualizando usuario");
+      console.error("Error enviando formulario:", error);
+      setMensaje("Error en la operación");
     }
+    setLoading(false);
   };
 
   // ===========================
@@ -140,7 +114,7 @@ export default function CRUD1() {
       nombre: u.nombre,
       apellido: u.apellido,
       email: u.email,
-      password: "",
+      password: "", // no rellenar contraseña
       direccion: u.direccion,
       fecha_nacimiento: u.fecha_nacimiento
         ? u.fecha_nacimiento.split("T")[0]
@@ -149,61 +123,72 @@ export default function CRUD1() {
   };
 
   // ===========================
-  // DELETE ELIMINAR USUARIO
+  // ELIMINAR USUARIO
   // ===========================
   const eliminar = async (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
+    setLoading(true);
     try {
       const res = await fetch(`http://localhost:3000/usuarioC/${id}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-
       const data = await res.json();
 
       if (!data.success) {
         setMensaje(data.message || "Error eliminando usuario");
+        setLoading(false);
         return;
       }
 
-      setMensaje("Usuario eliminado");
+      setMensaje("Usuario eliminado correctamente");
       obtenerUsuarios();
-
     } catch (error) {
-      console.error("Error eliminar usuario:", error);
+      console.error("Error eliminando usuario:", error);
       setMensaje("Error eliminando usuario");
     }
+    setLoading(false);
   };
 
   // ===========================
-  // INTERFAZ
+  // CERRAR SESIÓN
   // ===========================
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
   return (
     <div className="crud-container">
       <aside className="sidebar">
         <h2>Panel Admin</h2>
-        <ul>
-          <li>Usuarios</li>
-          <li>Productos</li>
-          <li>Reportes</li>
-        </ul>
+          <ul>
+            <li><a href="/usuarioC">Usuarios</a></li>
+            <li><a href="/productos">Productos</a></li>
+            <li><a href="/reportes">Reportes</a></li>
+            <li><a href="/estadisticas">Estadísticas</a></li> {/* NUEVO ENLACE */}
+          </ul>
+
+        <button className="btn-logout" onClick={cerrarSesion}>
+          Cerrar Sesión
+        </button>
       </aside>
 
       <main className="contenido">
         <h1>CRUD de Usuarios</h1>
 
         {mensaje && <p className="mensaje">{mensaje}</p>}
+        {loading && <p className="mensaje">Cargando...</p>}
 
         <form className="formulario" onSubmit={enviarFormulario}>
-          <input type="text" name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} />
-          <input type="text" name="apellido" placeholder="Apellido" value={formData.apellido} onChange={handleChange} />
-          <input type="email" name="email" placeholder="Correo" value={formData.email} onChange={handleChange} />
+          <input type="text" name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} required />
+          <input type="text" name="apellido" placeholder="Apellido" value={formData.apellido} onChange={handleChange} required />
+          <input type="email" name="email" placeholder="Correo" value={formData.email} onChange={handleChange} required />
           <input type="password" name="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} />
-          <input type="text" name="direccion" placeholder="Dirección" value={formData.direccion} onChange={handleChange} />
-          <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} />
-
-          <button type="submit" className="btn-guardar">
-            {editId ? "Actualizar" : "Guardar"}
-          </button>
+          <input type="text" name="direccion" placeholder="Dirección" value={formData.direccion} onChange={handleChange} required />
+          <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} required />
+          <button type="submit" className="btn-guardar">{editId ? "Actualizar" : "Guardar"}</button>
         </form>
 
         <table className="tabla">

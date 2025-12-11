@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Registro from './registro.jsx';
 import Login from './Login.jsx';
 import Catalogo from './catalogo.jsx';
-import CRUD1 from "./usuarioC.jsx"; // <--- IMPORTA EL CRUD
+import CRUD1 from "./usuarioC.jsx"; // <--- CRUD Usuarios
+import Estadisticas from "./estadisticas.jsx"; // <--- NUEVO componente
 
 function App() {
   return (
@@ -13,8 +14,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/catalogo" element={<Catalogo />} />
 
-        {/* ESTA RUTA FALTABA */}
-        <Route path="/usuariosC" element={<CRUD1 />} />
+        {/* CRUD de Usuarios */}
+        <Route path="/usuarioC" element={<CRUD1 />} />
+
+        {/* NUEVA RUTA: Estadísticas */}
+        <Route path="/estadisticas" element={<Estadisticas />} />
       </Routes>
     </BrowserRouter>
   );
