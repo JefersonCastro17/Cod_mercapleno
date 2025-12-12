@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./usuarioC.css";
 
 export default function CRUD1() {
@@ -13,10 +13,16 @@ export default function CRUD1() {
   });
   const [editId, setEditId] = useState(null);
   const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState(""); // success o error
   const [loading, setLoading] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+  const [formularioAbierto, setFormularioAbierto] = useState(false);
 
   const token = localStorage.getItem("token");
 
+  // ===========================
+  // VERIFICAR AUTENTICACIÓN
+  // ===========================
   useEffect(() => {
     if (!token) {
       alert("No autorizado, por favor inicia sesión.");
@@ -25,6 +31,19 @@ export default function CRUD1() {
       obtenerUsuarios();
     }
   }, [token]);
+
+  // ===========================
+  // AUTO-CERRAR MENSAJES
+  // ===========================
+  useEffect(() => {
+    if (mensaje) {
+      const timer = setTimeout(() => {
+        setMensaje("");
+        setTipoMensaje("");
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensaje]);
 
   // ===========================
   // OBTENER USUARIOS
@@ -41,21 +60,32 @@ export default function CRUD1() {
         setUsuarios(data.usuarios);
       } else {
         setUsuarios([]);
-        setMensaje(data.message || "No hay usuarios disponibles");
+        mostrarMensaje(data.message || "No hay usuarios disponibles", "error");
       }
     } catch (error) {
       console.error("Error cargando usuarios:", error);
-      setMensaje("Error cargando usuarios");
+      mostrarMensaje("Error cargando usuarios", "error");
     }
     setLoading(false);
   };
 
+  // ===========================
+  // MOSTRAR MENSAJE
+  // ===========================
+  const mostrarMensaje = (texto, tipo) => {
+    setMensaje(texto);
+    setTipoMensaje(tipo);
+  };
+
+  // ===========================
+  // MANEJAR CAMBIOS EN INPUTS
+  // ===========================
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // ===========================
-  // CREAR / ACTUALIZAR
+  // CREAR / ACTUALIZAR USUARIO
   // ===========================
   const enviarFormulario = async (e) => {
     e.preventDefault();
@@ -80,29 +110,38 @@ export default function CRUD1() {
       const data = await res.json();
 
       if (!data.success) {
-        setMensaje(data.message || "Error en la operación");
+        mostrarMensaje(data.message || "Error en la operación", "error");
         setLoading(false);
         return;
       }
 
-      setMensaje(editId ? "Usuario actualizado" : "Usuario creado correctamente");
+      mostrarMensaje(
+        editId ? "Usuario actualizado correctamente" : "Usuario creado correctamente",
+        "success"
+      );
 
-      setFormData({
-        nombre: "",
-        apellido: "",
-        email: "",
-        password: "",
-        direccion: "",
-        fecha_nacimiento: "",
-      });
-      setEditId(null);
-
+      resetearFormulario();
       obtenerUsuarios();
     } catch (error) {
       console.error("Error enviando formulario:", error);
-      setMensaje("Error en la operación");
+      mostrarMensaje("Error en la operación", "error");
     }
     setLoading(false);
+  };
+
+  // ===========================
+  // RESETEAR FORMULARIO
+  // ===========================
+  const resetearFormulario = () => {
+    setFormData({
+      nombre: "",
+      apellido: "",
+      email: "",
+      password: "",
+      direccion: "",
+      fecha_nacimiento: "",
+    });
+    setEditId(null);
   };
 
   // ===========================
@@ -114,12 +153,14 @@ export default function CRUD1() {
       nombre: u.nombre,
       apellido: u.apellido,
       email: u.email,
-      password: "", // no rellenar contraseña
+      password: "",
       direccion: u.direccion,
       fecha_nacimiento: u.fecha_nacimiento
         ? u.fecha_nacimiento.split("T")[0]
         : "",
     });
+    setFormularioAbierto(true); // Abrir formulario al editar
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // ===========================
@@ -127,6 +168,7 @@ export default function CRUD1() {
   // ===========================
   const eliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
+
     setLoading(true);
     try {
       const res = await fetch(`http://localhost:3000/usuarioC/${id}`, {
@@ -136,16 +178,16 @@ export default function CRUD1() {
       const data = await res.json();
 
       if (!data.success) {
-        setMensaje(data.message || "Error eliminando usuario");
+        mostrarMensaje(data.message || "Error eliminando usuario", "error");
         setLoading(false);
         return;
       }
 
-      setMensaje("Usuario eliminado correctamente");
+      mostrarMensaje("Usuario eliminado correctamente", "success");
       obtenerUsuarios();
     } catch (error) {
       console.error("Error eliminando usuario:", error);
-      setMensaje("Error eliminando usuario");
+      mostrarMensaje("Error eliminando usuario", "error");
     }
     setLoading(false);
   };
@@ -154,68 +196,307 @@ export default function CRUD1() {
   // CERRAR SESIÓN
   // ===========================
   const cerrarSesion = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+    if (window.confirm("¿Desea cerrar sesión?")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
   };
+
+  // ===========================
+  // FILTRAR USUARIOS
+  // ===========================
+  const usuariosFiltrados = usuarios.filter((u) => {
+    const searchLower = busqueda.toLowerCase();
+    return (
+      u.nombre.toLowerCase().includes(searchLower) ||
+      u.apellido.toLowerCase().includes(searchLower) ||
+      u.email.toLowerCase().includes(searchLower)
+    );
+  });
 
   return (
     <div className="crud-container">
+      {/* NOTIFICACIÓN */}
+      {mensaje && (
+        <div className={`notificacion ${tipoMensaje}`}>
+          <span className="notificacion-icon">
+            {tipoMensaje === "success" ? "✅" : "❌"}
+          </span>
+          <span className="notificacion-texto">{mensaje}</span>
+          <button
+            className="notificacion-cerrar"
+            onClick={() => setMensaje("")}
+            aria-label="Cerrar notificación"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* SIDEBAR */}
       <aside className="sidebar">
-        <h2>Panel Admin</h2>
+        <div className="sidebar-header">
+          <div className="logo">
+            <span className="logo-icon">⚙️</span>
+            <h2>Panel Admin</h2>
+          </div>
+        </div>
+
+        <nav className="sidebar-nav">
           <ul>
-            <li><a href="/usuarioC">Usuarios</a></li>
-            <li><a href="/productos">Productos</a></li>
-            <li><a href="/reportes">Reportes</a></li>
-            <li><a href="/estadisticas">Estadísticas</a></li> {/* NUEVO ENLACE */}
+            <li>
+              <a href="/usuarioC" className="nav-link active">
+                <span className="nav-icon">👥</span>
+                <span>Usuarios</span>
+              </a>
+            </li>
+            <li>
+              <a href="/productos" className="nav-link">
+                <span className="nav-icon">📦</span>
+                <span>Productos</span>
+              </a>
+            </li>
+            <li>
+              <a href="/reportes" className="nav-link">
+                <span className="nav-icon">📊</span>
+                <span>Reportes</span>
+              </a>
+            </li>
+            <li>
+              <a href="/estadisticas" className="nav-link">
+                <span className="nav-icon">📈</span>
+                <span>Estadísticas</span>
+              </a>
+            </li>
           </ul>
+        </nav>
 
         <button className="btn-logout" onClick={cerrarSesion}>
+          <span>🚪</span>
           Cerrar Sesión
         </button>
       </aside>
 
+      {/* CONTENIDO PRINCIPAL */}
       <main className="contenido">
-        <h1>CRUD de Usuarios</h1>
+        {/* FORMULARIO COLAPSABLE MINIMALISTA */}
+        <section className="formulario-section">
+          <button 
+            className="formulario-toggle"
+            onClick={() => setFormularioAbierto(!formularioAbierto)}
+            type="button"
+          >
+            <span className="toggle-icon">{editId ? "✏️" : "➕"}</span>
+            <span className="toggle-text">
+              {editId ? "Editar Usuario" : "Nuevo Usuario"}
+            </span>
+            <span className="toggle-arrow">▼</span>
+          </button>
 
-        {mensaje && <p className="mensaje">{mensaje}</p>}
-        {loading && <p className="mensaje">Cargando...</p>}
+          <div className={`formulario-contenido ${formularioAbierto ? 'open' : ''}`}>
+            <form className="formulario" onSubmit={enviarFormulario}>
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="nombre">Nombre</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  placeholder="Ingrese el nombre"
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-        <form className="formulario" onSubmit={enviarFormulario}>
-          <input type="text" name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} required />
-          <input type="text" name="apellido" placeholder="Apellido" value={formData.apellido} onChange={handleChange} required />
-          <input type="email" name="email" placeholder="Correo" value={formData.email} onChange={handleChange} required />
-          <input type="password" name="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} />
-          <input type="text" name="direccion" placeholder="Dirección" value={formData.direccion} onChange={handleChange} required />
-          <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} required />
-          <button type="submit" className="btn-guardar">{editId ? "Actualizar" : "Guardar"}</button>
-        </form>
+              <div className="form-group">
+                <label htmlFor="apellido">Apellido</label>
+                <input
+                  type="text"
+                  id="apellido"
+                  name="apellido"
+                  placeholder="Ingrese el apellido"
+                  value={formData.apellido}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-        <table className="tabla">
-          <thead>
-            <tr>
-              <th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.length === 0 ? (
-              <tr><td colSpan="5">No hay usuarios</td></tr>
-            ) : (
-              usuarios.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.nombre}</td>
-                  <td>{u.apellido}</td>
-                  <td>{u.email}</td>
-                  <td>
-                    <button className="btn-editar" onClick={() => editar(u)}>Editar</button>
-                    <button className="btn-eliminar" onClick={() => eliminar(u.id)}>Eliminar</button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              <div className="form-group">
+                <label htmlFor="email">Correo Electrónico</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="correo@ejemplo.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Contraseña</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder={editId ? "Dejar vacío para no cambiar" : "Ingrese la contraseña"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required={!editId}
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="direccion">Dirección</label>
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  placeholder="Ingrese la dirección"
+                  value={formData.direccion}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
+                <input
+                  type="date"
+                  id="fecha_nacimiento"
+                  name="fecha_nacimiento"
+                  value={formData.fecha_nacimiento}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" className="btn-guardar" disabled={loading}>
+                {loading ? "⏳ Guardando..." : editId ? "💾 Actualizar" : "💾 Guardar"}
+              </button>
+              {editId && (
+                <button
+                  type="button"
+                  className="btn-cancelar"
+                  onClick={resetearFormulario}
+                >
+                  ❌ Cancelar
+                </button>
+              )}
+            </div>
+          </form>
+          </div>
+        </section>
+
+        {/* SECCIÓN DE TABLA */}
+        <section className="tabla-section">
+          {/* HEADER CON TÍTULO Y TOTAL */}
+          <div className="tabla-main-header">
+            <div className="titulo-principal">
+              <h1>📋 CRUD de Usuarios</h1>
+              <p className="subtitulo">Gestión y administración de usuarios del sistema</p>
+            </div>
+            <div className="total-usuarios-card">
+              <span className="total-label">Total Usuarios</span>
+              <span className="total-count">{usuarios.length}</span>
+            </div>
+          </div>
+
+          {/* CONTROLES DE BÚSQUEDA */}
+          <div className="tabla-controles-header">
+            <div className="search-box">
+                <span className="search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre, apellido o email..."
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                />
+            </div>
+            <span className="badge-count-filtro">
+              {usuariosFiltrados.length} {usuariosFiltrados.length === 1 ? 'resultado' : 'resultados'}
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="loading-state">
+              <div className="spinner"></div>
+              <p>Cargando usuarios...</p>
+            </div>
+          ) : (
+            <div className="tabla-wrapper">
+              <table className="tabla">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Email</th>
+                    <th>Dirección</th>
+                    <th>Fecha Nac.</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuariosFiltrados.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="empty-state">
+                        <span className="empty-icon">📭</span>
+                        <p>
+                          {busqueda
+                            ? "No se encontraron usuarios con ese criterio"
+                            : "No hay usuarios registrados"}
+                        </p>
+                      </td>
+                    </tr>
+                  ) : (
+                    usuariosFiltrados.map((u) => (
+                      <tr key={u.id}>
+                        <td>
+                          <span className="badge-id">#{u.id}</span>
+                        </td>
+                        <td>{u.nombre}</td>
+                        <td>{u.apellido}</td>
+                        <td>{u.email}</td>
+                        <td>{u.direccion}</td>
+                        <td>
+                          {u.fecha_nacimiento
+                            ? new Date(u.fecha_nacimiento).toLocaleDateString("es-ES")
+                            : "-"}
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              className="btn-editar"
+                              onClick={() => editar(u)}
+                              title="Editar usuario"
+                              aria-label="Editar usuario"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className="btn-eliminar"
+                              onClick={() => eliminar(u.id)}
+                              title="Eliminar usuario"
+                              aria-label="Eliminar usuario"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
