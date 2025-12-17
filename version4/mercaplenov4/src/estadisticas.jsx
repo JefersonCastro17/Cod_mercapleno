@@ -1,120 +1,142 @@
-import React, { useState, useEffect } from "react";
-import { Bar, Pie } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
   Tooltip,
-  Legend,
-} from "chart.js";
+  ResponsiveContainer,
+} from "recharts";
+import "./estadisticas.css";
 
-// Registrar componentes de Chart.js
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const API = "http://localhost:3000/reportes";
 
 export default function Estadisticas() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [rolesCount, setRolesCount] = useState({});
+  const [ventasMes, setVentasMes] = useState([]);
+  const [topProductos, setTopProductos] = useState([]);
+  const [resumen, setResumen] = useState({
+    dinero_total: 0,
+    total_ventas: 0,
+    promedio: 0,
+  });
+  const [resumenMes, setResumenMes] = useState([]);
+
+  // Filtros
+  const [mesInicio, setMesInicio] = useState("");
+  const [mesFin, setMesFin] = useState("");
 
   useEffect(() => {
-    obtenerUsuarios();
+    cargarDatos();
   }, []);
 
-  const obtenerUsuarios = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/estadisticas");
-      const data = await res.json();
-
-      if (data.success) {
-        setUsuarios(data.usuarios);
-
-        // Contar usuarios por rol
-        const count = data.usuarios.reduce((acc, u) => {
-          const rol = u.nombre_rol || "Desconocido";
-          acc[rol] = (acc[rol] || 0) + 1;
-          return acc;
-        }, {});
-        setRolesCount(count);
-      }
-    } catch (error) {
-      console.error("Error cargando estadísticas:", error);
-    }
+  const cargarDatos = () => {
+    axios.get(`${API}/ventas-mes`).then(r => setVentasMes(r.data));
+    axios.get(`${API}/top-productos`).then(r => setTopProductos(r.data));
+    axios.get(`${API}/resumen`).then(r => setResumen(r.data));
+    axios.get(`${API}/resumen-mes`).then(r => setResumenMes(r.data));
   };
 
-  // Datos para gráfico de barras
-  const barData = {
-    labels: Object.keys(rolesCount),
-    datasets: [
-      {
-        label: "Cantidad de usuarios por rol",
-        data: Object.values(rolesCount),
-        backgroundColor: ["#007bff", "#28a745", "#ffc107"],
-      },
-    ],
-  };
-
-  // Datos para gráfico de torta
-  const pieData = {
-    labels: Object.keys(rolesCount),
-    datasets: [
-      {
-        label: "Usuarios por rol",
-        data: Object.values(rolesCount),
-        backgroundColor: ["#007bff", "#28a745", "#ffc107"],
-      },
-    ],
+  const filtrarPorMes = () => {
+    axios
+      .get(`${API}/ventas-mes?inicio=${mesInicio}&fin=${mesFin}`)
+      .then(r => setVentasMes(r.data));
   };
 
   return (
-    <div className="estadisticas-container">
-      <h1>Estadísticas de Usuarios</h1>
+    <div className="dashboard">
+      {/* MENÚ */}
+      <div className="menu">
+        <h1>Supermercado • Reportes</h1>
+      </div>
 
+      {/* FILTROS */}
+      <div className="filtros">
+        <div>
+          <label>Mes inicio</label>
+          <input type="month" value={mesInicio} onChange={e => setMesInicio(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Mes fin</label>
+          <input type="month" value={mesFin} onChange={e => setMesFin(e.target.value)} />
+        </div>
+
+        <button onClick={filtrarPorMes}>Filtrar</button>
+        <button onClick={cargarDatos}>Limpiar</button>
+      </div>
+
+      {/* KPIs */}
+      <div className="kpis">
+        <div className="kpi">
+          <h3>Ingresos Totales</h3>
+          <span>${resumen.dinero_total}</span>
+        </div>
+        <div className="kpi">
+          <h3>Total Ventas</h3>
+          <span>{resumen.total_ventas}</span>
+        </div>
+        <div className="kpi">
+          <h3>Promedio</h3>
+          <span>${Math.round(resumen.promedio)}</span>
+        </div>
+      </div>
+
+      {/* BOTÓN PDF */}
+      <a className="btn-pdf" href="http://localhost:3000/reportes/pdf-resumen">
+        Descargar PDF
+      </a>
+
+      {/* GRÁFICAS */}
       <div className="graficos">
-        <div className="grafico">
-          <h3>Usuarios por Rol (Barras)</h3>
-          <Bar key={JSON.stringify(rolesCount)} data={barData} />
+        <div className="card">
+          <h2>Ventas por Mes</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={ventasMes}>
+              <XAxis dataKey="mes" />
+              <YAxis />
+              <Tooltip />
+              <Line dataKey="total" stroke="#2563eb" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
-        <div className="grafico">
-          <h3>Usuarios por Rol (Torta)</h3>
-          <Pie key={JSON.stringify(rolesCount)} data={pieData} />
+        <div className="card">
+          <h2>Productos más vendidos</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={topProductos}>
+              <XAxis dataKey="nombre" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="total" fill="#facc15" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
+      </div>
 
-        <div className="grafico">
-          <h3>Listado de Usuarios</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Rol</th>
+      {/* TABLA */}
+      <div className="card">
+        <h2>Resumen Mensual</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Mes</th>
+              <th>Ventas</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resumenMes.map((m, i) => (
+              <tr key={i}>
+                <td>{m.mes}</td>
+                <td>{m.cantidad_ventas}</td>
+                <td>${m.total_mes}</td>
               </tr>
-            </thead>
-            <tbody>
-              {usuarios.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.nombre}</td>
-                  <td>{u.apellido}</td>
-                  <td>{u.email}</td>
-                  <td>{u.nombre_rol}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

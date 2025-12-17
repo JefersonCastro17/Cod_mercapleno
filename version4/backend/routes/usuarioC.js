@@ -2,84 +2,132 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// =====================
-// GET: LISTAR USUARIOS
-// =====================
+/* =========================
+   LISTAR
+========================= */
 router.get("/", (req, res) => {
-  const sql = "SELECT * FROM usuarios";
-
-  db.query(sql, (err, results) => {
+  db.query("SELECT * FROM usuarios", (err, rows) => {
     if (err) {
       console.log(err);
-      return res.json({ success: false, message: "Error al obtener usuarios" });
+      return res.json({ success: false });
     }
-
-    res.json({ success: true, usuarios: results });
+    res.json({ success: true, usuarios: rows });
   });
 });
 
-// =====================
-// POST: INSERTAR USUARIO
-// =====================
+/* =========================
+   CREAR
+========================= */
 router.post("/", (req, res) => {
-  const { nombre, apellido, email, password, direccion, fecha_nacimiento } = req.body;
+  const {
+    nombre,
+    apellido,
+    email,
+    password,
+    direccion,
+    fecha_nacimiento,
+    id_rol,
+    id_tipo_identificacion,
+    numero_identificacion
+  } = req.body;
 
-  if (!nombre || !apellido || !email) {
-    return res.json({ success: false, message: "Faltan datos" });
+  if (!nombre || !apellido || !email || !password) {
+    return res.json({ success: false, message: "Datos incompletos" });
   }
 
   const sql = `
-    INSERT INTO usuarios (nombre, apellido, email, password, direccion, fecha_nacimiento)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO usuarios (
+      nombre, apellido, email, password, direccion,
+      fecha_nacimiento, fecha_registro,
+      id_rol, id_tipo_identificacion, numero_identificacion
+    )
+    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)
   `;
 
-  db.query(sql, [nombre, apellido, email, password, direccion, fecha_nacimiento], (err) => {
-    if (err) {
-      console.log(err);
-      return res.json({ success: false, message: "Error al insertar usuario" });
+  db.query(
+    sql,
+    [
+      nombre,
+      apellido,
+      email,
+      password,
+      direccion,
+      fecha_nacimiento,
+      Number(id_rol),
+      Number(id_tipo_identificacion),
+      numero_identificacion
+    ],
+    (err) => {
+      if (err) {
+        console.log("ERROR INSERT:", err);
+        return res.json({ success: false });
+      }
+      res.json({ success: true });
     }
-
-    res.json({ success: true, message: "Usuario agregado correctamente" });
-  });
+  );
 });
 
-// =====================
-// PUT: ACTUALIZAR USUARIO
-// =====================
+/* =========================
+   ACTUALIZAR
+========================= */
 router.put("/:id", (req, res) => {
-  const { id } = req.params;
-  const { nombre, apellido, email, direccion, fecha_nacimiento } = req.body;
+  const {
+    nombre,
+    apellido,
+    email,
+    direccion,
+    fecha_nacimiento,
+    id_rol,
+    id_tipo_identificacion,
+    numero_identificacion
+  } = req.body;
 
   const sql = `
-    UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, direccion = ?, fecha_nacimiento = ?
+    UPDATE usuarios SET
+      nombre = ?,
+      apellido = ?,
+      email = ?,
+      direccion = ?,
+      fecha_nacimiento = ?,
+      id_rol = ?,
+      id_tipo_identificacion = ?,
+      numero_identificacion = ?
     WHERE id = ?
   `;
 
-  db.query(sql, [nombre, apellido, email, direccion, fecha_nacimiento, id], (err) => {
-    if (err) {
-      console.log(err);
-      return res.json({ success: false, message: "Error al actualizar usuario" });
+  db.query(
+    sql,
+    [
+      nombre,
+      apellido,
+      email,
+      direccion,
+      fecha_nacimiento,
+      Number(id_rol),
+      Number(id_tipo_identificacion),
+      numero_identificacion,
+      req.params.id
+    ],
+    (err) => {
+      if (err) {
+        console.log("ERROR UPDATE:", err);
+        return res.json({ success: false });
+      }
+      res.json({ success: true });
     }
-
-    res.json({ success: true, message: "Usuario actualizado correctamente" });
-  });
+  );
 });
 
-// =====================
-// DELETE: ELIMINAR USUARIO
-// =====================
+/* =========================
+   ELIMINAR
+========================= */
 router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-
-  const sql = "DELETE FROM usuarios WHERE id = ?";
-
-  db.query(sql, [id], (err) => {
+  db.query("DELETE FROM usuarios WHERE id = ?", [req.params.id], (err) => {
     if (err) {
-      console.log(err);
-      return res.json({ success: false, message: "Error al eliminar usuario" });
+      console.log("ERROR DELETE:", err);
+      return res.json({ success: false });
     }
-
-    res.json({ success: true, message: "Usuario eliminado correctamente" });
+    res.json({ success: true });
   });
 });
 

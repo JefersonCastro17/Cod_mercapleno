@@ -4,6 +4,7 @@ import Login from './Login.jsx';
 import Catalogo from './catalogo.jsx';
 import CRUD1 from "./usuarioC.jsx"; // <--- CRUD Usuarios
 import Estadisticas from "./estadisticas.jsx"; // <--- NUEVO componente
+import Productos from "./productos.jsx"; // <--- NUEVO componente
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
 
         {/* NUEVA RUTA: Estadísticas */}
         <Route path="/estadisticas" element={<Estadisticas />} />
+        {/* NUEVA RUTA: Gestión de Productos */}
+        <Route path="/productos" element={<Productos />} />
       </Routes>
     </BrowserRouter>
   );

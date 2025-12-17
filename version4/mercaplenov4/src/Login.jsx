@@ -76,7 +76,7 @@ if (requireCode) {
   alert("Inicio de sesión exitoso");
 
   if (data.user.id_rol === 1) {
-    navigate("/usuarioC");
+    navigate("/productos");
   } else if (data.user.id_rol === 2) {
     navigate("/usuarioC");
   } else {
