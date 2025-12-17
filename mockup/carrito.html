@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario - Carrito</title>
+  <link rel="stylesheet" href="catalogo.css">
+  <link rel="stylesheet" href="carrito.css">
+</head>
+<body>
+
+  <header>
+    <nav class="barra-navegacion">
+      <div class="texto-logo">Portal 2</div>
+      <div class="contenedor-botones">
+        <a href="inventario.html" class="boton-nav">Inicio</a>
+        <a href="carrito.html" class="boton-nav" id="carrito-link">
+          Carrito (<span id="cuenta-carrito">0</span>)
+        </a>
+      </div>
+    </nav>
+
+    <h1 style="text-align:center; margin-top:12px;">Tu Carrito de Compras</h1>
+  </header>
+
+  <main class="carrito-main">
+    
+    <section id="productos-carrito-container" class="productos-carrito-container">
+    </section>
+
+    <div id="carrito-vacio-msg" class="mensaje-vacio hidden">
+        <p>Tu carrito está vacio</p>
+        <a href="inventario.html" class="boton-nav">explorar productos</a>
+    </div>
+
+    <section id="totales-container" class="totales-container hidden">
+      <h2>Resumen del Pedido</h2>
+      <p>Total de Unidades: <span id="total-unidades">0</span></p>
+      <p class="total-precio">Total a Pagar: <span id="total-precio">0$</span></p>
+
+      <div class="botones-carrito-acciones">
+        <button id="btn-comprar" class="botoncito_producto_2" disabled>Comprar</button>
+        <button id="btn-vaciar" class="botoncito_producto">Vaciar Carrito</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="cartService.js"></script>
+  <script src="carrito.js"></script>
+</body>
+</html>

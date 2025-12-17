@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD de Usuarios</title>
+  <link rel="stylesheet" href="usuarios.css">
+</head>
+<body>
+
+<div class="crud-container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>Panel Admin</h2>
+    <ul>
+      <li><a href="usuarios.html">Usuarios</a></li>
+      <li><a href="Lista_productos.html">Productos</a></li>
+      <li><a href="/reportes">Reportes</a></li>
+      <li><a href="Estadisticas.html">Estadísticas</a></li>
+    </ul>
+
+<a href="login.html" class="btn-logout">
+  Cerrar Sesión
+</a>
+
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="contenido">
+    <h1>CRUD de Usuarios</h1>
+
+    <!-- MENSAJES (solo visuales) -->
+    <p class="mensaje">Mensaje del sistema</p>
+
+    <!-- FORMULARIO -->
+    <form class="formulario">
+      <input type="text" name="nombre" placeholder="Nombre" required>
+      <input type="text" name="apellido" placeholder="Apellido" required>
+      <input type="email" name="email" placeholder="Correo" required>
+      <input type="password" name="password" placeholder="Contraseña">
+      <input type="text" name="direccion" placeholder="Dirección" required>
+      <input type="date" name="fecha_nacimiento" required>
+
+      <button type="submit" class="btn-guardar">
+        Guardar
+      </button>
+    </form>
+
+    <!-- TABLA -->
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Juan</td>
+          <td>Pérez</td>
+          <td>juan@email.com</td>
+          <td>
+            <button class="btn-editar">Editar</button>
+            <button class="btn-eliminar">Eliminar</button>
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="5">No hay usuarios</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </main>
+</div>
+
+</body>
+</html>
