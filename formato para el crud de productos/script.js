@@ -20,6 +20,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitle = document.getElementById('modal-title');
     const formSubmitBtn = document.getElementById('form-submit-btn');
 
+    // === USUARIO SIMULADO (Para mostrar perfil de administrador) ===
+    // Cambia esto según la sesión real; solamente para demo/local
+    const currentUser = { name: 'Administrador', role: 'admin' };
+
+    const renderUserProfile = () => {
+        const headerProfile = document.getElementById('header-profile');
+        if (!headerProfile) return;
+
+        // Mostrar sólo para administradores
+        if (currentUser.role !== 'admin') {
+            headerProfile.style.display = 'none';
+            return;
+        }
+
+        document.getElementById('profile-name').textContent = currentUser.name;
+        document.getElementById('profile-role').textContent = 'Administrador';
+        headerProfile.style.display = 'flex';
+
+        const toggle = document.getElementById('profile-toggle');
+        const dropdown = document.getElementById('profile-dropdown');
+
+        // Alternar dropdown
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            headerProfile.classList.toggle('open');
+            dropdown.setAttribute('aria-hidden', headerProfile.classList.contains('open') ? 'false' : 'true');
+        });
+
+        // Cerrar al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!headerProfile.contains(e.target)) {
+                headerProfile.classList.remove('open');
+                dropdown.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        // Acción de cerrar sesión (simulada)
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                // Aquí podría ir la llamada real para cerrar sesión o redirección
+                alert('Cerrando sesión (simulado)');
+                // window.location.href = '/login.html';
+            });
+        }
+    };
+
     // FUNCIÓN PARA RENDERIZAR LA TABLA
     const renderTable = () => {
         tableBody.innerHTML = '';
@@ -147,5 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     categoryFilter.addEventListener('change', renderTable);
 
     // RENDERIZADO INICIAL
+    // Renderizar perfil (si aplica) y tabla
+    renderUserProfile();
     renderTable();
 });
