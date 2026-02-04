@@ -1,0 +1,108 @@
+/* 🟢 src/styles/base.css 
+
+   Propósito: Contiene Variables CSS, Reset Universal, y Estilos de Componentes Universales (Navbar, Títulos, Inputs)
+*/
+
+/* === 1. VARIABLES CSS (Unificación de colores principales) === */
+:root {
+  /* Variables de Ventas (global.css) */
+  --color-principal: #0066CC; /* Azul oscuro */
+  --color-acento: #F9B300; /* Amarillo/Naranja (Botones) */
+  --color-secundario: #3faac5;
+  --color-exito: rgb(91, 228, 91);
+  --color-fondo-base: #e5e7eb; /* Fondo de Ventas */
+  --color-texto-principal: #0f1720;
+  --color-texto-secundario: #5d6b6a;
+  
+  /* Variables de Login/Registro (Colores similares a #0066CC y #FFA500) */
+  --color-portal-header: #0066CC;
+  --color-portal-acento: #FFA500;
+  --color-portal-footer: #3d4f5c;
+
+  /* Variables de CRUD (usuarioC.css) */
+  --color-crud-primary: #667eea; /* Morado/Azul */
+  --color-crud-dark: #1a1d2e; /* Sidebar oscuro */
+  --color-crud-fondo: #f0f2f5; /* Fondo del CRUD */
+}
+
+/* === 2. RESET Y BASE === */
+* { 
+  box-sizing: border-box; 
+  /* Usaremos font-family de Ventas para mantener consistencia general. */
+  font-family: Arial, sans-serif; 
+  margin: 0; 
+  padding: 0; 
+}
+body { 
+  /* 🔑 CORRECCIÓN: Eliminar el margen predeterminado del navegador */
+  margin: 0; 
+  min-height: 100vh;
+  color: var(--color-texto-principal);
+}
+
+/* === 3. COMPONENTES UNIVERSALES (Compartidos por Venta) === */
+
+/* --- Barra de Navegación de Ventas (global.css) --- */
+.barra-navegacion {
+  background-color: var(--color-principal);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.texto-logo {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.contenedor-botones {
+  display: flex;
+}
+
+/* --- Botones de Navegación de Ventas (global.css) --- */
+.boton-nav {
+  background-color: var(--color-acento);
+  color: black;
+  padding: 8px 15px;
+  border-radius: 8px;
+  margin-left: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.boton-nav:hover {
+  opacity: 0.8;
+}
+
+/* --- Título Principal Común de Ventas (global.css) --- */
+.titulo-principal {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-size: 32px;
+  color: var(--color-principal);
+}
+
+/* --- Estilos de Inputs (Unificados de login.css/registro.css) --- */
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #666;
+    background-color: #fafafa;
+    transition: border-color 0.3s;
+}
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-principal); /* Usamos el azul de ventas o portal */
+    background-color: white;
+}

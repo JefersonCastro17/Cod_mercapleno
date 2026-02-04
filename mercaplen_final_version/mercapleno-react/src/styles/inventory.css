@@ -1,0 +1,98 @@
+/* 🟢 src/styles/inventory.css 
+   Propósito: Estilos específicos para la vista de Inventario/Catálogo (filtros, productos)
+*/
+
+.inventory-page-container {
+    padding: 0 15px; 
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.filtros {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Mantener la separación vertical/horizontal entre elementos */
+  /* 🔑 CLAVE: Cambiar a flex-start para que el último elemento no se vaya a la derecha */
+  justify-content: flex-start; 
+  align-items: center;
+}
+
+.filtros input, .filtros select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  flex: 1 1 180px; /* Permite que crezca, se encoja y tenga un ancho base de 180px */
+  min-width: 150px;
+  /* Opcional: añade margen derecho para separar un poco más en líneas */
+  margin-right: 10px; 
+}
+
+.catalogo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+.producto {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,.1);
+  transition: transform 0.2s ease-in-out;
+}
+.producto:hover {
+  transform: scale(1.03);
+}
+
+.imagen {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.imagen img { 
+  width: 100%;
+  height: 100%;
+  /* 🔑 CORRECCIÓN: Cambiado de 'cover' a 'contain' para mostrar la imagen completa */
+  object-fit: contain; 
+}
+
+.botones { 
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.botoncito_producto { 
+  background: var(--color-exito);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* MEDIA QUERIES (de global.css) */
+@media (max-width: 600px) {
+  .filtros {
+    flex-direction: column;
+  }
+  .filtros input, .filtros select, .filtros button {
+    width: 100%;
+    flex: none;
+  }
+  .catalogo {
+    grid-template-columns: 1fr;
+  }
+}
