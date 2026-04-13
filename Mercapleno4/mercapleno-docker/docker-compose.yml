@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: root123
+      MARIADB_DATABASE: mercapleno
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mercapleno.sql:/docker-entrypoint-initdb.d/mercapleno.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -proot123 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: always
+
+  backend:
+    build:
+      context: ../mercapleno-backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ../mercapleno-backend/.env.docker
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ../Propio
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  mysql_data:
