@@ -1,0 +1,51 @@
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMysqlModule dependencies initialized[39m[38;5;3m +17ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEmailModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersAdminModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInventoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSalesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mProductsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth}:[39m[38;5;3m +22ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/register, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/verify-login-code, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/verify-email, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/resend-verification, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/request-password-reset, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/reset-password, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/logout, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersAdminController {/api/admin/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/users, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/users/:id, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/users/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admin/users/:id, DELETE} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mProductsController {/api/productos}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/productos, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/productos, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/productos/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/productos/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mInventoryController {/api/movimientos}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/movimientos/productos, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/movimientos/documentos, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/movimientos/registrar, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSalesController {/api/sales}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/products, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/categories, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/orders, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/sales/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/reports/ventas-mes, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/reports/top-productos, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/reports/resumen, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/reports/resumen-mes, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sales/reports/pdf-resumen, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 16832  - [39m02/04/2026, 12:57:35 p. m. [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +10ms[39m
+Mercapleno backend corriendo en http://localhost:4000
+Swagger: http://localhost:4000/api/docs
+[32m[Nest] 16832  - [39m02/04/2026, 12:58:35 p. m. [32m    LOG[39m [38;5;3m[EmailService] [39m[32mCorreo de segundo factor enviado a jefersonjairbernalcastro172129+2fa@gmail.com. Message ID: <eb047e31-d4dc-83e5-9db7-e2c7f095a156@gmail.com>[39m
