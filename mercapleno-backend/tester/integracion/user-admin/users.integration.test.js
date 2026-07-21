@@ -1,0 +1,266 @@
+const request = require('supertest'); //simula peticiones HTTP
+const express = require('express');
+
+describe('Pruebas de Integración - Mock API CRUD de Usuarios y Autenticación', () => {
+  let app;
+
+  let adminToken = 'mock-admin-jwt-token-xyz'; 
+  let createdUserId = 42;                      
+  const testUserEmail = 'pedro.picapiedra@example.com'; 
+  const testUserNumId = '1234567890';          
+
+
+  // Simulamos la tabla de usuarios del backend (mock)
+  let mockUsersDb = [
+    {
+      id: 1,
+      nombre: 'Admin',
+      apellido: 'Mercapleno',
+      email: 'admin@mercapleno.local',
+      direccion: 'Panel administrativo',
+      fecha_nacimiento: '1990-01-01',
+      id_rol: 1, // Rol de Administrador
+      id_tipo_identificacion: 1,
+      numero_identificacion: '1000000001',
+      email_verified: true,
+    }
+  ];
+
+  beforeAll(() => {
+    app = express();
+    app.use(express.json());
+
+        // simula un login
+    app.post('/api/auth/login', (req, res) => {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ success: false, message: 'Faltan credenciales' });
+      }
+
+      // Si las credenciales coinciden con el administrador, simulamos la respuesta de segundo factor
+      if (email === 'admin@mercapleno.local' && password === 'Admin123*') {
+        return res.json({
+          success: true,
+          message: 'Enviamos un codigo de segundo factor a tu correo para completar el inicio de sesion.',
+          requiresTwoFactor: true,
+          pendingToken: 'mock-pending-token-123', // Token temporal 
+          twoFactorExpiresInMinutes: 10,
+        });
+      }
+
+      return res.status(401).json({ success: false, message: 'Credenciales incorrectas' });
+    });
+
+    //valida el segundo factor
+    app.post('/api/auth/verify-login-code', (req, res) => {
+      const { pendingToken, code } = req.body;
+      
+      if (pendingToken === 'mock-pending-token-123' && code === '123456') {
+        return res.json({
+          success: true,
+          message: 'Inicio de sesion exitoso',
+          token: adminToken, // Entregamos el token JWT final con acceso completo
+          user: {
+            id: 1,
+            email: 'admin@mercapleno.local',
+            id_rol: 1,
+            rol: 'Administrador',
+          }
+        });
+      }
+
+      return res.status(400).json({ success: false, message: 'Código de segundo factor inválido o expirado' });
+    });
+
+      //valida el token
+    const checkMockAuth = (req, res, next) => {
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader || authHeader !== `Bearer ${adminToken}`) {
+        return res.status(401).json({ success: false, message: 'No autorizado o token ausente' });
+      }
+      next(); // Si el token es correcto, permite avanzar al siguiente paso
+    };
+
+    //R - listar usuarios
+    app.get('/api/admin/users', checkMockAuth, (req, res) => {
+      res.json(mockUsersDb);
+    });
+
+
+    // C - crear
+    app.post('/api/admin/users', checkMockAuth, (req, res) => {
+      const { nombre, apellido, email, password, direccion, fecha_nacimiento, id_rol, id_tipo_identificacion, numero_identificacion } = req.body;
+      
+      // Validación para campos vacios
+      if (!nombre || !apellido || !email || !password || !direccion || !fecha_nacimiento || !id_rol || !id_tipo_identificacion || !numero_identificacion) {
+        return res.status(400).json({ success: false, message: 'Campos obligatorios faltantes' });
+      }
+
+      const newUser = {
+        id: createdUserId,
+        nombre,
+        apellido,
+        email,
+        direccion,
+        fecha_nacimiento,
+        id_rol,
+        id_tipo_identificacion,
+        numero_identificacion,
+        email_verified: true,
+      };
+
+      mockUsersDb.push(newUser); // Se guarda en el arreglo
+      res.status(201).json(newUser);
+    });
+
+    //U - actualizar
+    app.patch('/api/admin/users/:id', checkMockAuth, (req, res) => {
+      const userId = Number(req.params.id);
+      const userIndex = mockUsersDb.findIndex(u => u.id === userId);  //findIndex busca la posición del usuario en el arreglo
+      
+      if (userIndex === -1) {
+        return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+      }
+
+      // Mezclamos la información actual con la nueva información enviada
+      const updatedUser = {
+        ...mockUsersDb[userIndex],
+        ...req.body
+      };
+
+      mockUsersDb[userIndex] = updatedUser; // Guardamos en memoria
+      res.json(updatedUser);
+    });
+
+    // D - eliminar
+    app.delete('/api/admin/users/:id', checkMockAuth, (req, res) => {
+      const userId = Number(req.params.id);
+      const userIndex = mockUsersDb.findIndex(u => u.id === userId);
+      
+      if (userIndex === -1) {
+        return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+      }
+
+      mockUsersDb.splice(userIndex, 1); // Remueve el elemento del arreglo en memoria
+      res.json({ success: true, message: 'Usuario eliminado correctamente' });
+    });
+  });
+
+
+      //Aca inicia las pruebas de integracion
+
+  describe('Flujo de Autenticación y Obtención de Token Admin (2FA)', () => {
+    
+    it('debe solicitar el código de segundo factor para el administrador', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'admin@mercapleno.local',
+          password: 'Admin123*',
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.requiresTwoFactor).toBe(true);
+      expect(res.body.pendingToken).toBeDefined();
+
+      const pendingToken = res.body.pendingToken;
+
+
+      const verifyRes = await request(app)
+        .post('/api/auth/verify-login-code')
+        .send({
+          pendingToken,
+          code: '123456',
+        });
+
+      expect(verifyRes.status).toBe(200);
+      expect(verifyRes.body.success).toBe(true);
+      expect(verifyRes.body.token).toBe(adminToken);
+    });
+  });
+
+
+  
+
+
+
+  describe('Flujo CRUD de Usuarios Administrativos (Rutas Protegidas)', () => {
+    
+    it('debe denegar el acceso a listar usuarios si no se envía token', async () => {
+      const res = await request(app).get('/api/admin/users');
+      expect(res.status).toBe(401); //usuario no valido
+    });
+
+    it('debe listar los usuarios cuando el token de administrador es válido', async () => {
+      const res = await request(app)
+        .get('/api/admin/users')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBe(1); //solo está el administrador inicial
+    });
+
+    it('debe crear un nuevo usuario administrativo', async () => {
+      const newUserPayload = {
+        nombre: 'Pedro',
+        apellido: 'Picapiedra',
+        email: testUserEmail,
+        password: 'SecurePass123!',
+        direccion: 'Piedradura 456',
+        fecha_nacimiento: '1985-08-20',
+        id_rol: 2, // Rol Empleado
+        id_tipo_identificacion: 1,
+        numero_identificacion: testUserNumId,
+      };
+
+      const res = await request(app)
+        .post('/api/admin/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(newUserPayload);
+
+      expect(res.status).toBe(201);
+      expect(res.body.email).toBe(testUserEmail);
+      expect(res.body.id).toBe(createdUserId);
+    });
+
+    it('debe actualizar los datos del usuario creado', async () => {
+      // Campos a modificar
+      const updatePayload = {
+        nombre: 'Pedro Modificado',
+        direccion: 'Nueva Cantera 789',
+      };
+
+      const res = await request(app)
+        .patch(`/api/admin/users/${createdUserId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(updatePayload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.nombre).toBe('Pedro Modificado');
+      expect(res.body.direccion).toBe('Nueva Cantera 789');
+    });
+
+
+    it('debe eliminar el usuario administrativo creado', async () => {
+
+      const res = await request(app)
+        .delete(`/api/admin/users/${createdUserId}`)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+
+
+      const checkRes = await request(app)
+        .get('/api/admin/users')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      const userExists = checkRes.body.some((user) => user.id === createdUserId);
+      expect(userExists).toBe(false); // No debe existir en el listado
+    });
+  });
+});
