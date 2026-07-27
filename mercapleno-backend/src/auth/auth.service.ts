@@ -1,4 +1,4 @@
-﻿import {
+import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
@@ -8,6 +8,7 @@
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { envs } from '../config';
@@ -203,17 +204,27 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
-    const existing = await this.prisma.usuarios.findFirst({
-      where: {
-        OR: [{ email: dto.email }, { numero_identificacion: dto.numero_identificacion }],
-      },
+    const existingEmail = await this.prisma.usuarios.findFirst({
+      where: { email: dto.email },
       select: { id: true },
     });
 
-    if (existing) {
+    if (existingEmail) {
       throw new ConflictException({
         success: false,
-        message: 'El email o numero de identificacion ya estan registrados.',
+        message: 'El correo electronico ya esta registrado.',
+      });
+    }
+
+    const existingDoc = await this.prisma.usuarios.findFirst({
+      where: { numero_identificacion: dto.numero_identificacion },
+      select: { id: true },
+    });
+
+    if (existingDoc) {
+      throw new ConflictException({
+        success: false,
+        message: 'El numero de identificacion ya esta registrado.',
       });
     }
 
@@ -260,7 +271,22 @@ export class AuthService {
         requiresVerification: true,
         emailSent,
       };
-    } catch (_error) {
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        const target = String(error.meta?.target || '');
+        if (target.includes('email')) {
+          throw new ConflictException({
+            success: false,
+            message: 'El correo electronico ya esta registrado.',
+          });
+        }
+        if (target.includes('numero_identificacion')) {
+          throw new ConflictException({
+            success: false,
+            message: 'El numero de identificacion ya esta registrado.',
+          });
+        }
+      }
       throw new InternalServerErrorException({
         success: false,
         message: 'Error interno del servidor al registrar.',

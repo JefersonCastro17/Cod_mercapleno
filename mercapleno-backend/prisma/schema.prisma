@@ -159,14 +159,14 @@ model usuarios {
   id                         Int                  @id @default(autoincrement())
   nombre                     String               @db.VarChar(100)
   apellido                   String               @db.VarChar(100)
-  email                      String               @db.VarChar(150)
+  email                      String               @unique @db.VarChar(150)
   password                   String               @db.VarChar(255)
   direccion                  String               @db.VarChar(255)
   fecha_nacimiento           DateTime             @db.Date
   fecha_registro             DateTime             @default(now()) @db.Timestamp(0)
   id_rol                     Int
   id_tipo_identificacion     Int
-  numero_identificacion      String               @db.VarChar(50)
+  numero_identificacion      String               @unique @db.VarChar(50)
   email_verified             Boolean              @default(false)
   email_verification_code    String?              @db.VarChar(64)
   email_verification_expires DateTime?            @db.DateTime(0)

@@ -38,7 +38,7 @@ services:
       SMTP_PORT: 587
       SMTP_SECURE: false
       SMTP_USER: mercapleno@gmail.com
-      SMTP_PASS: gtyw ijvu eryl dhng
+      SMTP_PASS: bjco veem vzie ubda
       SMTP_FROM_EMAIL: mercapleno@gmail.com
       APP_NAME: mercapleno
       EMAIL_VERIFICATION_TTL_MIN: 15

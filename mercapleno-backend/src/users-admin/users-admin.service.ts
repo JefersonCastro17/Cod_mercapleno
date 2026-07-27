@@ -36,6 +36,13 @@ export class UsersAdminService {
   ): never {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
+        const target = String(error.meta?.target || '');
+        if (target.includes('email')) {
+          throw new ConflictException({ success: false, message: 'El correo electronico ya esta registrado.' });
+        }
+        if (target.includes('numero_identificacion')) {
+          throw new ConflictException({ success: false, message: 'El numero de identificacion ya esta registrado.' });
+        }
         throw new ConflictException({ success: false, message: 'Ya existe un usuario con esos datos' });
       }
 
@@ -47,8 +54,22 @@ export class UsersAdminService {
     throw new InternalServerErrorException({ success: false, message: fallbackMessage });
   }
 
-  async findAll() {
+  async findAll(search?: string) {
+    const where: Prisma.usuariosWhereInput = {};
+
+    if (search) {
+      const cleanSearch = search.trim();
+      where.OR = [
+        { nombre: { contains: cleanSearch } },
+        { apellido: { contains: cleanSearch } },
+        { email: { contains: cleanSearch } },
+        { numero_identificacion: { contains: cleanSearch } },
+        { roles: { nombre: { contains: cleanSearch } } },
+      ];
+    }
+
     const usuarios = await this.prisma.usuarios.findMany({
+      where,
       include: {
         roles: true,
         tipos_identificacion: true,
@@ -77,6 +98,30 @@ export class UsersAdminService {
   }
 
   async create(dto: CreateUserAdminDto) {
+    const existingEmail = await this.prisma.usuarios.findFirst({
+      where: { email: dto.email },
+      select: { id: true },
+    });
+
+    if (existingEmail) {
+      throw new ConflictException({
+        success: false,
+        message: 'El correo electronico ya esta registrado.',
+      });
+    }
+
+    const existingDoc = await this.prisma.usuarios.findFirst({
+      where: { numero_identificacion: dto.numero_identificacion },
+      select: { id: true },
+    });
+
+    if (existingDoc) {
+      throw new ConflictException({
+        success: false,
+        message: 'El numero de identificacion ya esta registrado.',
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     try {
@@ -114,6 +159,40 @@ export class UsersAdminService {
 
     if (!existing) {
       throw new NotFoundException({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    if (dto.email !== undefined) {
+      const emailConflict = await this.prisma.usuarios.findFirst({
+        where: {
+          email: dto.email,
+          id: { not: userId },
+        },
+        select: { id: true },
+      });
+
+      if (emailConflict) {
+        throw new ConflictException({
+          success: false,
+          message: 'El correo electronico ya esta registrado.',
+        });
+      }
+    }
+
+    if (dto.numero_identificacion !== undefined) {
+      const docConflict = await this.prisma.usuarios.findFirst({
+        where: {
+          numero_identificacion: dto.numero_identificacion,
+          id: { not: userId },
+        },
+        select: { id: true },
+      });
+
+      if (docConflict) {
+        throw new ConflictException({
+          success: false,
+          message: 'El numero de identificacion ya esta registrado.',
+        });
+      }
     }
 
     const data: Prisma.usuariosUpdateInput = {

@@ -37,7 +37,8 @@ class UsersAdminController extends ChangeNotifier {
         final matchesName = user.fullName.toLowerCase().contains(_searchQuery);
         final matchesEmail = user.email.toLowerCase().contains(_searchQuery);
         final matchesDoc = user.numeroIdentificacion.contains(_searchQuery);
-        return matchesName || matchesEmail || matchesDoc;
+        final matchesRol = (user.rol ?? '').toLowerCase().contains(_searchQuery);
+        return matchesName || matchesEmail || matchesDoc || matchesRol;
       }).toList();
     }
     notifyListeners();

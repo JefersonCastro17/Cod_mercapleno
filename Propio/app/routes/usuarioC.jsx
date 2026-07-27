@@ -26,6 +26,7 @@ export default function UsuarioC() {
   const [mostrar, setMostrar] = useState(false);
   const [editId, setEditId] = useState(null);
   const [busqueda, setBusqueda] = useState("");
+  const [filtroRol, setFiltroRol] = useState("");
   const [toast, setToast] = useState(null);
   const [form, setForm] = useState(() => getEmptyForm());
 
@@ -237,11 +238,24 @@ export default function UsuarioC() {
     return <span className="badge cliente">Cliente</span>;
   };
 
-  const usuariosFiltrados = usuarios.filter((u) =>
-    `${u.nombre} ${u.apellido} ${u.email}`
-      .toLowerCase()
-      .includes(busqueda.toLowerCase())
-  );
+  const usuariosFiltrados = usuarios.filter((u) => {
+    // Filtro por rol (dropdown)
+    if (filtroRol && u.rol !== filtroRol) return false;
+
+    // Búsqueda de texto libre
+    const query = busqueda.trim().toLowerCase();
+    if (!query) return true;
+
+    const nombreCompleto = `${u.nombre || ""} ${u.apellido || ""}`.toLowerCase();
+    const email = (u.email || "").toLowerCase();
+    const documento = (u.numero_identificacion || "").toLowerCase();
+
+    return (
+      nombreCompleto.includes(query) ||
+      email.includes(query) ||
+      documento.includes(query)
+    );
+  });
 
   return (
     <div className="container">
@@ -253,12 +267,34 @@ export default function UsuarioC() {
             Nuevo Usuario
           </button>
 
-          <input
-            className="input-busqueda"
-            placeholder="Buscar por nombre o email..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+          <div className="controles-busqueda">
+            <input
+              className="input-busqueda"
+              placeholder="Buscar por nombre, email o documento..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+
+            <select
+              className="select-filtro-rol"
+              value={filtroRol}
+              onChange={(e) => setFiltroRol(e.target.value)}
+            >
+              <option value="">Todos los roles</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Empleado">Empleado</option>
+              <option value="Cliente">Cliente</option>
+            </select>
+
+            {(busqueda || filtroRol) && (
+              <button
+                className="btn-limpiar"
+                onClick={() => { setBusqueda(""); setFiltroRol(""); }}
+              >
+                ✕ Limpiar
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="tabla-container">
